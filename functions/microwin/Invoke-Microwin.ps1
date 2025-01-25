@@ -394,6 +394,10 @@ public class PowerManagement {
 
         Write-Host "Creating ISO image"
 
+        Write-Host "Copying autounattend.xml to ISO"
+        $nitroWinAnswerFileUrl = "https://raw.githubusercontent.com/Nitro4542/NitroWin/main/assets/autounattend/autounattend.xml"
+        Invoke-WebRequest $nitroWinAnswerFileUrl -OutFile "$mountDir\autounattend.xml"
+
         # if we downloaded oscdimg from github it will be in the temp directory so use it
         # if it is not in temp it is part of ADK and is in global PATH so just set it to oscdimg.exe
         $oscdimgPath = Join-Path $env:TEMP 'oscdimg.exe'
