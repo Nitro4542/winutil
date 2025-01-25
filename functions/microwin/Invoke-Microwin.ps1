@@ -398,6 +398,45 @@ public class PowerManagement {
         $nitroWinAnswerFileUrl = "https://raw.githubusercontent.com/Nitro4542/NitroWin/main/assets/autounattend/autounattend.xml"
         Invoke-WebRequest $nitroWinAnswerFileUrl -OutFile "$mountDir\autounattend.xml"
 
+        # Add NitroWin to ISO
+        $targetDir = Join-Path -Path $mountDir -ChildPath "NitroWin"
+
+        $zipUrl = "https://github.com/Nitro4542/NitroWin/archive/refs/heads/main.zip"
+
+        $tempZipPath = Join-Path -Path $env:TEMP -ChildPath "NitroWin.zip"
+
+        $tempExtractPath = Join-Path -Path $env:TEMP -ChildPath "NitroWinExtract"
+
+        Write-Host "Downloading NitroWin as a zip file..."
+        Invoke-WebRequest -Uri $zipUrl -OutFile $tempZipPath
+
+        Write-Host "Extracting archive..."
+        if (Test-Path -Path $tempExtractPath) {
+            Remove-Item -Path $tempExtractPath -Recurse -Force
+        }
+        Expand-Archive -Path $tempZipPath -DestinationPath $tempExtractPath
+
+        # Test target directory
+        Write-Host "Copying to $targetDir..."
+        if (-Not (Test-Path -Path $targetDir)) {
+            New-Item -ItemType Directory -Path $targetDir | Out-Null
+        }
+
+        # Move to target directory
+        $sourceDir = Join-Path -Path $tempExtractPath -ChildPath "NitroWin-main"
+        if (Test-Path -Path $sourceDir) {
+            Copy-Item -Path $sourceDir\* -Destination $targetDir -Recurse -Force
+        } else {
+            Write-Host "Fehler: Quellverzeichnis wurde nicht gefunden!" -ForegroundColor Red
+        }
+
+        # Cleanup
+        Write-Host "Cleaning up temporary files..."
+        Remove-Item -Path $tempZipPath -Force
+        Remove-Item -Path $tempExtractPath -Recurse -Force
+
+        Write-Host "Action completed. Files were copied to $targetDir."
+
         # if we downloaded oscdimg from github it will be in the temp directory so use it
         # if it is not in temp it is part of ADK and is in global PATH so just set it to oscdimg.exe
         $oscdimgPath = Join-Path $env:TEMP 'oscdimg.exe'
