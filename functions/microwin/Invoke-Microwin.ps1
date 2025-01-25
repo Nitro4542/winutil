@@ -209,32 +209,6 @@ public class PowerManagement {
         Microwin-RemoveFileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*ParentalControls*" -Directory
         Write-Host "Removal complete!"
 
-        Write-Host "Create unattend.xml"
-
-        if ($sync.MicrowinUserName.Text -eq "")
-        {
-            Microwin-NewUnattend -userName "User"
-        }
-        else
-        {
-            if ($sync.MicrowinUserPassword.Password -eq "")
-            {
-                Microwin-NewUnattend -userName "$($sync.MicrowinUserName.Text)"
-            }
-            else
-            {
-                Microwin-NewUnattend -userName "$($sync.MicrowinUserName.Text)" -userPassword "$($sync.MicrowinUserPassword.Password)"
-            }
-        }
-        Write-Host "Done Create unattend.xml"
-        Write-Host "Copy unattend.xml file into the ISO"
-        New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\Panther"
-        Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\Windows\Panther\unattend.xml" -force
-        New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\System32\Sysprep"
-        Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\Windows\System32\Sysprep\unattend.xml" -force
-        Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\unattend.xml" -force
-        Write-Host "Done Copy unattend.xml"
-
         Write-Host "Create FirstRun"
         Microwin-NewFirstRun
         Write-Host "Done create FirstRun"
